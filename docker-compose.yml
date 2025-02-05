@@ -1,0 +1,11 @@
+services:
+  vite:
+    build: .
+    ports:
+      - "3000:3000" # Expose Vite development server on port 3000
+    volumes:
+      - .:/app # Mount the current directory to /app in the container
+      - /app/node_modules # Persist node_modules to prevent re-installation each time
+    environment:
+      - NODE_ENV=development
+    command: npm run dev # Run the Vite development server
