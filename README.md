@@ -12,7 +12,7 @@ This project is built using:
 - **shadcn/ui** - Pre-styled UI components
 - **Tailwind CSS** - Utility-first styling
 - **Lucide Icons** - Beautiful, customizable icons
-- **Docker** - Containerized environment setup (Work in Progress)
+- **Docker** - Containerized environment setup
 
 ## 🎯 Features
 
@@ -27,19 +27,33 @@ This project is built using:
 
 ### 1️. Clone the repository
 
-```sh
-git clone <YOUR_GIT_URL>
-cd <YOUR_PROJECT_NAME>
-```
+    git clone <YOUR_GIT_URL>
+    cd <YOUR_PROJECT_NAME>
 
 ### 2. Install Dependencies
 
-- npm install
+    npm install
 
 ### 3. Start Development Server
 
-- npm run dev
+# Option 1: Using npm
 
-### 4. Your App SHould be running at
+     npm run dev
 
-- http://localhost:3000
+# Option 2: Using Docker
+
+     docker-compose up
+
+### 4. Your App Should be Running at
+
+- Development Server: http://localhost:5173
+  (or)
+- Docker Container: http://localhost:5173 (or the port specified in your Docker configuration)
+
+### 5.🐳 Docker Setup
+
+To run the application using Docker, ensure you have Docker and Docker Compose installed on your machine. Then, simply run:
+
+     docker-compose up
+
+This will build and start the application in a containerized environment, making it easy to manage dependencies and ensure consistency across different development environments.

@@ -1,3 +1,5 @@
+// src/components/ChatInterface.tsx
+
 import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +9,7 @@ import { VoiceInput } from "./VoiceInput";
 import { QuickReplies } from "./QuickReplies";
 import { ChatHeader } from "./ChatHeader";
 import { cn } from "@/lib/utils";
+import { sendMessage } from "@/services/mockApi"; // Import the mock API service
 
 interface Message {
   id: string;
@@ -59,20 +62,25 @@ export const ChatInterface = () => {
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await sendMessage({ content: input, source: "text" });
+
       const aiMessage = {
-        id: (Date.now() + 1).toString(),
-        text: "I understand your message. How else can I help you?",
+        id: response.id,
+        text: response.content,
         isAI: true,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date(response.timestamp).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
       };
+
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -82,7 +90,7 @@ export const ChatInterface = () => {
     }
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     const userMessage = {
@@ -99,19 +107,25 @@ export const ChatInterface = () => {
     setInput("");
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await sendMessage({ content: message, source: "text" });
+
       const aiMessage = {
-        id: (Date.now() + 1).toString(),
-        text: "I understand your message. How else can I help you?",
+        id: response.id,
+        text: response.content,
         isAI: true,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date(response.timestamp).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
       };
+
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -151,20 +165,47 @@ export const ChatInterface = () => {
               placeholder="Type your message..."
               className="flex-1"
             />
+
             <VoiceInput
-              onSend={(message) => {
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    id: Date.now().toString(),
-                    text: message,
-                    isAI: false,
-                    timestamp: new Date().toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }),
-                  },
-                ]);
+              onSend={async (message) => {
+                const userMessage = {
+                  id: Date.now().toString(),
+                  text: message,
+                  isAI: false,
+                  timestamp: new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                };
+
+                setMessages((prev) => [...prev, userMessage]);
+                setIsLoading(true);
+
+                try {
+                  const response = await sendMessage({
+                    content: message,
+                    source: "speech",
+                  });
+
+                  const aiMessage = {
+                    id: response.id,
+                    text: response.content,
+                    isAI: true,
+                    timestamp: new Date(response.timestamp).toLocaleTimeString(
+                      [],
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    ),
+                  };
+
+                  setMessages((prev) => [...prev, aiMessage]);
+                } catch (error) {
+                  console.error("Failed to send voice message:", error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
             />
 
